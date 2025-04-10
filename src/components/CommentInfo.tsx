@@ -2,7 +2,7 @@ import { Comment } from '../types/Comment';
 
 type Props = {
   comment: Comment;
-  deleteComm: (id: number) => void;
+  deleteComm: (commId: number) => void;
 };
 
 export const CommentInfo: React.FC<Props> = ({ comment, deleteComm }) => {

@@ -1,31 +1,69 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NewCommentForm } from './NewCommentForm';
 import { Post } from '../types/Post';
 import { Comment } from '../types/Comment';
 import { CommentInfo } from './CommentInfo';
 import { Loader } from './Loader';
 
+import { addComment, deleteComments, getComments } from './api/fetchComments';
+
 type Props = {
-  errorComments: boolean;
-  loadingComments: boolean;
   selectedPost: Post | null;
-  comments: Comment[];
-  createComment: (comm: Omit<Comment, 'id'>) => Promise<void>;
-  loadingNewComm: boolean;
-  deleteComm: (id: number) => void;
 };
 
-export const PostDetails: React.FC<Props> = ({
-  errorComments,
-  loadingComments,
-  selectedPost,
-  comments,
-  createComment,
-  loadingNewComm,
-  deleteComm,
-}) => {
+export const PostDetails: React.FC<Props> = ({ selectedPost }) => {
   const { id, title, body } = selectedPost as Post;
   const [writing, setWriting] = useState(false);
+
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [errorComments, setErrorComments] = useState(false);
+  const [loadingComments, setLoadingComments] = useState(false);
+  const [loadingNewComm, setLoadingNewComm] = useState(false);
+
+  const loadComments = async (postId: number) => {
+    setLoadingComments(true);
+    setErrorComments(false);
+    try {
+      const comm = await getComments(postId);
+
+      setComments(comm);
+    } catch {
+      setErrorComments(true);
+    } finally {
+      setLoadingComments(false);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedPost) {
+      loadComments(selectedPost?.id);
+      setWriting(false);
+    }
+  }, [selectedPost]);
+
+  const createComment = async (data: Omit<Comment, 'id'>) => {
+    setLoadingNewComm(true);
+    try {
+      const newComment = await addComment({ ...data });
+
+      setComments(prevComm => {
+        return [...prevComm, newComment];
+      });
+    } catch (e) {
+      setErrorComments(true);
+      throw e;
+    } finally {
+      setLoadingNewComm(false);
+    }
+  };
+
+  const deleteComm = async (commId: number) => {
+    await deleteComments(commId);
+
+    setComments(prevComm => {
+      return prevComm.filter(comm => comm.id !== commId);
+    });
+  };
 
   return (
     <div className="content" data-cy="PostDetails">

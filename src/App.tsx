@@ -10,30 +10,19 @@ import { Loader } from './components/Loader';
 import { getUsers } from './components/api/users';
 import { getPosts } from './components/api/fetchPosts';
 import { PostDetails } from './components/PostDetails';
-import {
-  addComment,
-  deleteComments,
-  getComments,
-} from './components/api/fetchComments';
 
-import { Comment } from './types/Comment';
 import { Post } from './types/Post';
 import { User } from './types/User';
 
 export const App = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
-  const [comments, setComments] = useState<Comment[]>([]);
 
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
 
   const [errorPosts, setErrorPosts] = useState(false);
-  const [errorComments, setErrorComments] = useState(false);
-
   const [loadingPosts, setLoadingPosts] = useState(false);
-  const [loadingComments, setLoadingComments] = useState(false);
-  const [loadingNewComm, setLoadingNewComm] = useState(false);
 
   useEffect(() => {
     setErrorPosts(false);
@@ -62,43 +51,6 @@ export const App = () => {
     } finally {
       setLoadingPosts(false);
     }
-  };
-
-  const loadComments = async (postId: number) => {
-    setLoadingComments(true);
-    setErrorComments(false);
-    try {
-      const comm = await getComments(postId);
-
-      setComments(comm);
-    } catch {
-      setErrorComments(true);
-    } finally {
-      setLoadingComments(false);
-    }
-  };
-
-  const createComment = async (data: Omit<Comment, 'id'>) => {
-    setLoadingNewComm(true);
-    try {
-      const newComment = await addComment({ ...data });
-
-      setComments(prevComm => {
-        return [...prevComm, newComment];
-      });
-    } catch (e) {
-      setErrorComments(true);
-      throw e;
-    } finally {
-      setLoadingNewComm(false);
-    }
-  };
-
-  const deleteComm = (id: number) => {
-    setComments(prevComm => {
-      return prevComm.filter(comm => comm.id !== id);
-    });
-    deleteComments(id);
   };
 
   const selectUser = (user: User) => {
@@ -156,7 +108,6 @@ export const App = () => {
                     selectedPost={selectedPost}
                     setSelectedPost={setSelectedPost}
                     key={selectedPost?.id}
-                    loadComments={loadComments}
                   />
                 )}
               </div>
@@ -175,16 +126,7 @@ export const App = () => {
           >
             {selectedPost && (
               <div className="tile is-child box is-success ">
-                <PostDetails
-                  errorComments={errorComments}
-                  loadingComments={loadingComments}
-                  comments={comments}
-                  selectedPost={selectedPost}
-                  key={selectedPost.id}
-                  createComment={createComment}
-                  loadingNewComm={loadingNewComm}
-                  deleteComm={deleteComm}
-                />
+                <PostDetails selectedPost={selectedPost} />
               </div>
             )}
           </div>

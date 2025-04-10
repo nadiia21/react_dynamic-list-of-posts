@@ -5,14 +5,12 @@ type Props = {
   post: Post;
   setSelectedPost: (post: Post | null) => void;
   selectedPost: Post | null;
-  loadComments: (postId: number) => void;
 };
 
 export const PostItem: React.FC<Props> = ({
   post,
   setSelectedPost,
   selectedPost,
-  loadComments,
 }) => {
   const { id, title } = post;
 
@@ -21,7 +19,6 @@ export const PostItem: React.FC<Props> = ({
       setSelectedPost(null);
     } else {
       setSelectedPost(post);
-      loadComments(post.id);
     }
   };
 

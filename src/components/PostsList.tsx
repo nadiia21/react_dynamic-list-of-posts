@@ -6,14 +6,12 @@ type Props = {
   posts: Post[];
   setSelectedPost: (post: Post | null) => void;
   selectedPost: Post | null;
-  loadComments: (postId: number) => void;
 };
 
 export const PostsList: React.FC<Props> = ({
   posts,
   setSelectedPost,
   selectedPost,
-  loadComments,
 }) => (
   <div data-cy="PostsList">
     <p className="title">Posts:</p>
@@ -35,7 +33,6 @@ export const PostsList: React.FC<Props> = ({
             post={post}
             setSelectedPost={setSelectedPost}
             selectedPost={selectedPost}
-            loadComments={loadComments}
           />
         ))}
       </tbody>
