@@ -17,13 +17,13 @@ export const NewCommentForm: React.FC<Props> = ({
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [body, setBody] = useState('');
-  const [sending, setSending] = useState(true);
+  const [hasError, setHasError] = useState(false);
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!name.length || !email.length || !body.length || !selectedPost) {
-      setSending(false);
+      setHasError(true);
 
       return;
     }
@@ -31,10 +31,10 @@ export const NewCommentForm: React.FC<Props> = ({
     createComment({ name, email, body, postId: selectedPost.id })
       .then(() => {
         setBody('');
-        setSending(true);
+        setHasError(false);
       })
       .catch(() => {
-        setSending(false);
+        setHasError(true);
       });
   };
 
@@ -42,7 +42,7 @@ export const NewCommentForm: React.FC<Props> = ({
     setName('');
     setEmail('');
     setBody('');
-    setSending(true);
+    setHasError(false);
   };
 
   return (
@@ -61,7 +61,7 @@ export const NewCommentForm: React.FC<Props> = ({
             id="comment-author-name"
             placeholder="Name Surname"
             className={classNames('input', {
-              'is-danger': !sending && name.length === 0,
+              'is-danger': hasError && name.length === 0,
             })}
           />
 
@@ -69,7 +69,7 @@ export const NewCommentForm: React.FC<Props> = ({
             <i className="fas fa-user" />
           </span>
 
-          {!sending && name.length === 0 && (
+          {hasError && name.length === 0 && (
             <span
               className="icon is-small is-right has-text-danger"
               data-cy="ErrorIcon"
@@ -79,7 +79,7 @@ export const NewCommentForm: React.FC<Props> = ({
           )}
         </div>
 
-        {!sending && name.length === 0 && (
+        {hasError && name.length === 0 && (
           <p className="help is-danger" data-cy="ErrorMessage">
             Name is required
           </p>
@@ -100,7 +100,7 @@ export const NewCommentForm: React.FC<Props> = ({
             id="comment-author-email"
             placeholder="email@test.com"
             className={classNames('input', {
-              'is-danger': !sending && email.length === 0,
+              'is-danger': hasError && email.length === 0,
             })}
           />
 
@@ -108,7 +108,7 @@ export const NewCommentForm: React.FC<Props> = ({
             <i className="fas fa-envelope" />
           </span>
 
-          {!sending && email.length === 0 && (
+          {hasError && email.length === 0 && (
             <span
               className="icon is-small is-right has-text-danger"
               data-cy="ErrorIcon"
@@ -118,7 +118,7 @@ export const NewCommentForm: React.FC<Props> = ({
           )}
         </div>
 
-        {!sending && email.length === 0 && (
+        {hasError && email.length === 0 && (
           <p className="help is-danger" data-cy="ErrorMessage">
             Email is required
           </p>
@@ -138,12 +138,12 @@ export const NewCommentForm: React.FC<Props> = ({
             onChange={e => setBody(e.target.value)}
             placeholder="Type comment here"
             className={classNames('input', {
-              'is-danger': !sending && body.length === 0,
+              'is-danger': hasError && body.length === 0,
             })}
           />
         </div>
 
-        {!sending && body.length === 0 && (
+        {hasError && body.length === 0 && (
           <p className="help is-danger" data-cy="ErrorMessage">
             Enter some text
           </p>

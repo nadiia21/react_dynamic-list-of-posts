@@ -107,7 +107,6 @@ export const App = () => {
                     posts={posts}
                     selectedPost={selectedPost}
                     setSelectedPost={setSelectedPost}
-                    key={selectedPost?.id}
                   />
                 )}
               </div>
